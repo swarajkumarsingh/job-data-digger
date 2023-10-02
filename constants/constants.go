@@ -1,5 +1,7 @@
 package constants
 
+const REDIS_JOBS_LIST_KEY = "myList"
+
 // Server ENV constants
 const (
         ENV_PROD  = "prod"
