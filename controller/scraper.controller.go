@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/swarajkumarsingh/job-data-digger/errorHandler"
 	"github.com/swarajkumarsingh/job-data-digger/functions/logger"
+	"github.com/swarajkumarsingh/job-data-digger/errorCodes"
 )
 
 func Scrape(r *gin.Context) {
@@ -14,7 +15,7 @@ func Scrape(r *gin.Context) {
 
 	if IsEmptyCache() {
 		jobs := GetScrapeDataFromCache(r)
-		r.JSON(http.StatusOK, gin.H{
+		r.JSON(errorcodes.STATUS_OK, gin.H{
 			"error": false,
 			"data":  jobs,
 		})

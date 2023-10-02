@@ -1,10 +1,8 @@
 // package errorcodes - contains useful status codes
 package errorcodes
 
-import "net/http"
-
-const STATUS_OK = http.StatusOK
-const STATUS_CREATED = http.StatusCreated
-const STATUS_NOT_FOUND = http.StatusNotFound
-const STATUS_BAD_REQUEST = http.StatusBadRequest
-const STATUS_INTERNAL_SERVER_ERROR = http.StatusInternalServerError
+const STATUS_OK = 200
+const STATUS_CREATED = 201
+const STATUS_NOT_FOUND = 401
+const STATUS_BAD_REQUEST = 404
+const STATUS_INTERNAL_SERVER_ERROR = 500
