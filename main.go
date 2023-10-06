@@ -33,7 +33,7 @@ func enableCORS() gin.HandlerFunc {
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error loading env file")
 	}
 
 	if conf.ENV == conf.ENV_PROD {
@@ -41,7 +41,7 @@ func main() {
 	}
 
 	r := gin.Default()
-	
+
 	r.ForwardedByClientIP = true
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 
