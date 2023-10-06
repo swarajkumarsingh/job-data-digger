@@ -95,3 +95,5 @@ Contributions are welcome! If you'd like to contribute to this project, please f
 
 ### License
 This project is licensed under the MIT License. See the LICENSE file for details.
+
+Happy job data scraping! If you have any questions or run into any issues, feel free to open an issue or reach out to us.
