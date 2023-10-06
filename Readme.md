@@ -1,6 +1,6 @@
 # Job Data Digger
 
-![GitHub License](https://img.shields.io/github/license/swarajkumar/job-data-digger)
+![GitHub License](https://img.shields.io/github/license/swarajkumarsingh/job-data-digger)
 ![GitHub Stars](https://img.shields.io/github/stars/swarajkumarsingh/job-data-digger)
 ![GitHub Issues](https://img.shields.io/github/issues/swarajkumarsingh/job-data-digger)
 ![GitHub Forks](https://img.shields.io/github/forks/swarajkumarsingh/job-data-digger)
@@ -25,6 +25,9 @@ Job Data Scraper is a Go-based web scraper application that collects job listing
 - **Data Storage**: Stores scraped job data in a Redis database.
 - **Scheduled Refresh**: Refreshes job data by re-scraping the Google Careers page every 24 hours.
 - **Dockerized**: Easily deploy the application using Docker.
+
+## Realtime images
+![image](https://github.com/gin-gonic/gin/assets/89764448/f7aa1778-56e1-4f79-8b6a-19b58edb9341)
 
 ## Prerequisites
 
