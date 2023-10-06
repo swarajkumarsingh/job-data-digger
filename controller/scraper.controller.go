@@ -5,15 +5,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	errorcodes "github.com/swarajkumarsingh/job-data-digger/errorCodes"
 	"github.com/swarajkumarsingh/job-data-digger/errorHandler"
 	"github.com/swarajkumarsingh/job-data-digger/functions/logger"
-	"github.com/swarajkumarsingh/job-data-digger/errorCodes"
 )
 
 func Scrape(r *gin.Context) {
 	defer errorHandler.Recovery(r, http.StatusConflict)
 
-	if IsEmptyCache() {
+	if IsCacheDataPresent() {
 		jobs := GetScrapeDataFromCache(r)
 		r.JSON(errorcodes.STATUS_OK, gin.H{
 			"error": false,
@@ -24,10 +24,10 @@ func Scrape(r *gin.Context) {
 
 	jobs, err := GetAllJobs(r)
 	if err != nil {
-		logger.WithRequest(r).Errorln(err)
+		logger.WithRequest(r).Panicln(err)
 	}
 
-	err = AddedScrapeDataToRedis(r, jobs)
+	err = AddScrapeDataToRedis(r, jobs)
 	if err != nil {
 		logger.WithRequest(r).Errorln(err)
 	}

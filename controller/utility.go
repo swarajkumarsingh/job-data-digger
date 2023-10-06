@@ -11,22 +11,35 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gocolly/colly"
 	"github.com/swarajkumarsingh/job-data-digger/constants"
+	"github.com/swarajkumarsingh/job-data-digger/functions/general"
 	"github.com/swarajkumarsingh/job-data-digger/functions/logger"
 	redisUtils "github.com/swarajkumarsingh/job-data-digger/infra/redis"
 	"github.com/swarajkumarsingh/job-data-digger/model"
 )
 
-func IsEmptyCache() bool {
-	cacheData := GetScrapeDataListFromCache()
+func IsCacheDataPresent() bool {
+	cacheData := getScrapeDataListFromCache()
 	return len(cacheData) != 0
 }
 
 func GetAllJobs(r *gin.Context) ([]model.Job, error) {
-	// TODO: Add more job providers(microsoft, meta, amazon)
-	return GetGoogleJobs(r)
+
+	jobs := []model.Job{}
+
+	data, err := googleJobsProvider(r)
+	if err != nil {
+		logger.WithRequest(r).Errorln("Error while fetching data")
+	}
+
+	jobs = append(jobs, data...)
+	if general.IsModelEmpty(jobs) {
+		return jobs, errors.New("data not found")
+	}
+
+	return jobs, nil
 }
 
-func GetGoogleJobs(r *gin.Context) ([]model.Job, error) {
+func googleJobsProvider(r *gin.Context) ([]model.Job, error) {
 	c := colly.NewCollector()
 	jobs := []model.Job{}
 
@@ -45,25 +58,33 @@ func GetGoogleJobs(r *gin.Context) ([]model.Job, error) {
 		jobs = append(jobs, j)
 	})
 
-	c.OnError(func(_ *colly.Response, err error) {
-		logger.WithRequest(r).Errorln("Error while fetch results google jobs..")
+	c.OnError(func(c *colly.Response, err error) {
+		onError(r, c)
 	})
-	c.OnRequest(OnRequest)
-	c.OnScraped(OnScraped)
-	c.OnResponse(OnResponse)
+	c.OnRequest(onRequest)
+	c.OnScraped(onScraped)
+	c.OnResponse(onResponse)
 
-	c.Visit("https://www.google.com/about/careers/applications/jobs/results/?location=India")
+	c.Visit(constants.GOOGLE_CAREER_PAGE_URL)
 	c.Wait()
 
 	return jobs, nil
 }
 
-func OnRequest(r *colly.Request)   {}
-func OnScraped(r *colly.Response)  {}
-func OnResponse(r *colly.Response) {}
+func onRequest(r *colly.Request) {
+	logger.Log.Debug()
+}
+func onScraped(r *colly.Response) {}
+func onError(r *gin.Context, _ *colly.Response) {
+	logger.WithRequest(r).Panicln("Error while fetch results google jobs..")
 
-func GetScrapeDataListFromCache() []string {
-	val, err := redisUtils.Rdb.LRange(context.Background(), constants.REDIS_JOBS_LIST_KEY, 0, -1).Result()
+}
+func onResponse(r *colly.Response) {
+	logger.Log.Errorln("Received response from ", r.Request.URL)
+}
+
+func getScrapeDataListFromCache() []string {
+	val, err := redisUtils.Rdb.LRange(context.Background(), constants.REDIS_SCRAPE_DATA_KEY, 0, -1).Result()
 	if err != nil {
 		return []string{}
 	}
@@ -72,7 +93,7 @@ func GetScrapeDataListFromCache() []string {
 
 func GetScrapeDataFromCache(r *gin.Context) []model.Job {
 	var jobs []model.Job
-	rawData := GetScrapeDataListFromCache()
+	rawData := getScrapeDataListFromCache()
 
 	if err := json.Unmarshal([]byte(rawData[0]), &jobs); err != nil {
 		logger.WithRequest(r).Panicln(err)
@@ -81,20 +102,20 @@ func GetScrapeDataFromCache(r *gin.Context) []model.Job {
 	return jobs
 }
 
-func AddedScrapeDataToRedis(r *gin.Context, jobs []model.Job) error {
+func AddScrapeDataToRedis(r *gin.Context, jobs []model.Job) error {
 	jsonData, err := json.Marshal(jobs)
 	if err != nil {
 		err = errors.New("Failed to marshal JSON data, cannot add data in cache: " + err.Error())
 		return err
 	}
 
-	err = redisUtils.Rdb.LPush(context.Background(), "myList", jsonData).Err()
+	err = redisUtils.Rdb.LPush(context.Background(), constants.REDIS_SCRAPE_DATA_KEY, jsonData).Err()
 	if err != nil {
 		err = errors.New("Failed to add data to the list in Redis: " + err.Error())
 		return err
 	}
 
-	err = redisUtils.Rdb.Expire(context.Background(), "myList", time.Hour*24).Err()
+	err = redisUtils.Rdb.Expire(context.Background(), constants.REDIS_SCRAPE_DATA_KEY, time.Hour*24).Err()
 	if err != nil {
 		err = errors.New("Error while setting ttl: " + err.Error())
 		return err

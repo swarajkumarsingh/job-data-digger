@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/swarajkumarsingh/job-data-digger/conf"
 	"github.com/swarajkumarsingh/job-data-digger/controller"
+	redis "github.com/swarajkumarsingh/job-data-digger/infra/redis"
 )
 
 var version string = "1.0"
@@ -28,6 +29,7 @@ func enableCORS() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -39,13 +41,14 @@ func main() {
 	}
 
 	r := gin.Default()
+	
+	r.ForwardedByClientIP = true
+	r.SetTrustedProxies([]string{"127.0.0.1"})
 
-	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(enableCORS())
 
-	//   TODO: ADD DB
-	//   TODO: ADD Redis
+	redis.Init()
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -62,5 +65,5 @@ func main() {
 	r.GET("/scrape", controller.Scrape)
 
 	log.Printf("Server Started, version: %s", version)
-	r.Run("localhost:8080")
+	r.Run(":8080")
 }

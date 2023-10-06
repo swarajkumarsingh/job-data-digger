@@ -1,6 +1,8 @@
 package constants
 
-const REDIS_JOBS_LIST_KEY = "myList"
+const GOOGLE_CAREER_PAGE_URL = "https://www.google.com/about/careers/applications/jobs/results/?location=India"
+
+const REDIS_SCRAPE_DATA_KEY = "scrape-data-job-data-digger"
 
 // Server ENV constants
 const (
