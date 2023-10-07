@@ -11,6 +11,7 @@ tmp_dir = "tmp"
   exclude_file = []
   exclude_regex = ["_test.go"]
   exclude_unchanged = false
+  poll = true
   follow_symlink = false
   full_bin = ""
   include_dir = []
