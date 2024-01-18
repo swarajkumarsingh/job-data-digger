@@ -6,6 +6,7 @@ services:
     container_name: redis_container
     ports:
       - 6379:6379
+    restart: on-failure
     volumes:
       - .cache:/data
     
@@ -16,6 +17,13 @@ services:
       - 8080:8080
     volumes:
       - ./:/app
+    environment:
+      - PORT=${PORT}
+      - STAGE=${STAGE}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_USER=${REDIS_USER}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     restart: on-failure
     depends_on:
       - redis

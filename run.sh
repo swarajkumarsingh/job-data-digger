@@ -1,1 +1,2 @@
-make run
+docker compose down
+make run STAGE=dev PORT=8080 REDIS_HOST=rediss://default:AVNS_uc-vchRNDw-mIM8cx4j@redis-ziplink-swarajkumarsingh.a.aivencloud.com:15685 REDIS_PORT=15685 REDIS_USER=default REDIS_PASSWORD=AVNS_uc-vchRNDw-mIM8cx4j 

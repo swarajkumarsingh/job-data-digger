@@ -8,7 +8,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/swarajkumarsingh/job-data-digger/conf"
 	"github.com/swarajkumarsingh/job-data-digger/controller"
-	redis "github.com/swarajkumarsingh/job-data-digger/infra/redis"
 )
 
 var version string = "1.0"
@@ -48,15 +47,13 @@ func main() {
 	r.Use(gin.Recovery())
 	r.Use(enableCORS())
 
-	redis.Init()
-
-	r.GET("/", func(c *gin.Context) {
+	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "health ok",
 		})
 	})
 
-	r.POST("/", func(c *gin.Context) {
+	r.POST("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "health ok",
 		})
