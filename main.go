@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -34,6 +35,8 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading env file")
 	}
+
+	fmt.Println("ENV: ", conf.ENV)
 
 	if conf.ENV == conf.ENV_PROD {
 		gin.SetMode(gin.ReleaseMode)

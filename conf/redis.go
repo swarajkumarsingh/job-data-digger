@@ -16,13 +16,13 @@ func GetRedisAddr() string {
 	return fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT"))
 }
 
-func getRedisAddrTemp() string {
+func GetRedisAddrTemp() string {
 	return "host.docker.internal:6379"
 }
 
 var RedisConf = map[string]interface{}{
-	"Addr": getRedisAddrTemp(),
-	"SSL":  ENV == ENV_PROD,
+	"Addr":     GetRedisAddr(),
+	"SSL":      ENV == ENV_PROD,
 	"Username": os.Getenv("REDIS_USER"),
 	"Password": os.Getenv("REDIS_PASSWORD"),
 }

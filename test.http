@@ -1,0 +1,5 @@
+### Healt Check
+GET http://localhost:8080/health
+
+### Redirect Url
+GET http://localhost:8080/scrape
